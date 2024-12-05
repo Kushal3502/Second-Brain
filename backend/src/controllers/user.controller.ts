@@ -1,7 +1,14 @@
 import { Request, Response } from "express";
 import { User } from "../models/user.model";
 import bcrypt from "bcryptjs";
-import { generateToken } from "../utils/generateTokens";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../utils/generateTokens";
+
+interface AuthRequest extends Request {
+  user?: { _id: string; username: string };
+}
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -72,24 +79,79 @@ export const signin = async (req: Request, res: Response) => {
     }
 
     // set cookies
-    const token = generateToken(user);
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    return res
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+      .json({
+        success: true,
+        user: {
+          _id: user._id,
+          username: user.username,
+        },
+        message: "Sign in successful",
+      });
+  } catch (error) {
+    console.error("Signin error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
     });
+  }
+};
+
+export const logout = async (req: AuthRequest, res: Response) => {
+  try {
+    // clear all cookies
+    res.clearCookie("accessToken").clearCookie("refreshToken");
+
+    if (req.user) {
+      const user = await User.findById(req.user._id);
+      // remove refreshtoken from db
+      if (user) {
+        user.refreshToken = null;
+        await user.save();
+      }
+    }
 
     return res.status(200).json({
       success: true,
-      user: {
-        _id: user._id,
-        username: user.username,
-      },
-      message: "Sign in successful",
+      message: "Logged out successfully",
     });
   } catch (error) {
-    console.error("Signin error:", error);
+    console.error("Logout error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+export const checkAuth = async (req: Request, res: Response) => {
+  try {
+    return res
+      .status(404)
+      .json({ success: true, message: "User fetched successfully" });
+
+    // if token found -> reset the token
+  } catch (error) {
+    console.error("Auth error:", error);
     return res.status(500).json({
       success: false,
       message: "Something went wrong",
