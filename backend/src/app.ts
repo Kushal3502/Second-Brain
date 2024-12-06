@@ -17,8 +17,10 @@ app.use(cookieParser());
 
 // route import
 import userRouter from "./routes/user.routes";
+import brainRouter from "./routes/brain.routes";
 
 // routes
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/brain", brainRouter);
 
 export default app;

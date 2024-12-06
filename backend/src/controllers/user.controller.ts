@@ -146,7 +146,7 @@ export const logout = async (req: AuthRequest, res: Response) => {
 export const checkAuth = async (req: Request, res: Response) => {
   try {
     return res
-      .status(404)
+      .status(200)
       .json({ success: true, message: "User fetched successfully" });
 
     // if token found -> reset the token
