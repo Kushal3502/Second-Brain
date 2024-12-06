@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
 import { Brain } from "../models/brain.model";
+import { Link } from "../models/link.model";
+import { generateHash } from "../utils/generateHash";
+import { User } from "../models/user.model";
 
 export const createBrain = async (req: Request, res: Response) => {
   try {
@@ -157,6 +160,97 @@ export const deleteBrain = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log("Brain delete error :: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+export const shareBrain = async (req: Request, res: Response) => {
+  try {
+    const { share } = req.body;
+
+    if (share) {
+      const isLinkExists = await Link.findOne({
+        // @ts-ignore
+        userId: req.user._id,
+      });
+
+      if (isLinkExists) {
+        return res.status(200).json({
+          success: true,
+          hash: isLinkExists.hash,
+          message: "Link created",
+        });
+      }
+
+      const hash = generateHash(10);
+
+      await Link.create({
+        hash,
+        // @ts-ignore
+        userId: req.user._id,
+      });
+
+      return res.status(200).json({
+        success: true,
+        hash,
+        message: "Link created",
+      });
+    } else {
+      await Link.deleteOne({
+        // @ts-ignore
+        userId: req.user._id,
+      });
+
+      return res.status(200).json({
+        message: "Removed link",
+      });
+    }
+  } catch (error) {
+    console.log("Brain share error :: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+export const getShareBrain = async (req: Request, res: Response) => {
+  try {
+    const { hash } = req.params;
+
+    const link = await Link.findOne({ hash });
+
+    if (!link) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid hash",
+      });
+    }
+
+    const brains = await Brain.find({
+      userId: link.userId,
+    });
+
+    const user = await User.findOne({
+      _id: link.userId,
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.json({
+      username: user.username,
+      brains,
+    });
+  } catch (error) {
+    console.log("Brain share error :: ", error);
     res.status(500).json({
       success: false,
       message: "Something went wrong",
