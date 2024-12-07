@@ -1,21 +1,42 @@
-import { Plus } from "lucide-react";
-import "./App.css";
-import Button from "./components/ui/Button";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import axios from "axios";
 
 function App() {
+  const navigate = useNavigate();
+
+  const fetchAuthStatus = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/auth`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log(response.data);
+
+      if (response.data?.success) {
+        navigate("/");
+      } else {
+        navigate("/auth/signin");
+      }
+    } catch (error: any) {
+      console.error("Error fetching auth status:", error);
+      navigate("/auth/signin");
+    }
+  };
+
+  useEffect(() => {
+    fetchAuthStatus();
+  }, []);
+
   return (
     <div>
-      <h1 className="text-3xl font-bold underline bg-indigo-400">
-        Hello world!
-      </h1>
-      <Button
-        onClick={() => console.log("Hello")}
-        variant="primary"
-        size="md"
-      >
-        <Plus />
-        Save
-      </Button>
+      <h1>Second Brain</h1>
+      <Outlet />
+      <Toaster />
     </div>
   );
 }

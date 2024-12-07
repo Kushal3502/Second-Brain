@@ -89,13 +89,11 @@ export const signin = async (req: Request, res: Response) => {
       .cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .status(200)
@@ -145,9 +143,12 @@ export const logout = async (req: AuthRequest, res: Response) => {
 
 export const checkAuth = async (req: Request, res: Response) => {
   try {
-    return res
-      .status(200)
-      .json({ success: true, message: "User fetched successfully" });
+    return res.status(200).json({
+      success: true,
+      // @ts-ignore
+      user: req.user,
+      message: "User fetched successfully",
+    });
 
     // if token found -> reset the token
   } catch (error) {
