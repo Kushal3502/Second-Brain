@@ -7,6 +7,10 @@ import Dashboard from "./pages/Dashboard.tsx";
 import Auth from "./pages/Auth.tsx";
 import Signup from "./components/Signup.tsx";
 import Signin from "./components/Signin.tsx";
+import Home from "./components/Home.tsx";
+import Tweet from "./components/Tweet.tsx";
+import Video from "./components/Video.tsx";
+import Document from "./components/Document.tsx";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +20,24 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <Dashboard />,
+        children: [
+          {
+            path: "",
+            element: <Home />,
+          },
+          {
+            path: "tweet",
+            element: <Tweet />,
+          },
+          {
+            path: "video",
+            element: <Video />,
+          },
+          {
+            path: "documents",
+            element: <Document />,
+          },
+        ],
       },
       {
         path: "auth",

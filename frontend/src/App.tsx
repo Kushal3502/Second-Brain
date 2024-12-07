@@ -34,7 +34,6 @@ function App() {
 
   return (
     <div>
-      <h1>Second Brain</h1>
       <Outlet />
       <Toaster />
     </div>
