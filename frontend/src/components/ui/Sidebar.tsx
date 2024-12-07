@@ -42,8 +42,6 @@ function Sidebar() {
         }
       );
 
-      console.log(response.data);
-
       if (response.data.success) {
         toast.success(response.data.message || "Logged out");
         navigate("/auth/signin");
@@ -52,7 +50,6 @@ function Sidebar() {
       }
     } catch (error: any) {
       console.error("Logout error:", error);
-
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
@@ -62,38 +59,37 @@ function Sidebar() {
   };
 
   return (
-    <div className=" fixed bg-gray-900 text-gray-300 h-screen p-4 md:w-56 flex flex-col justify-between">
-      <div>
-        <h1 className="text-2xl font-bold mb-6 text-white">Second Brain</h1>
-        <div>
-          {sidebarItems.map((item, index) => (
-            <div className="mb-2" key={index}>
-              <Button
-                variant={activeTab === item.label ? "primary" : "secondary"}
-                className={`w-full ${
-                  activeTab === item.label ? "font-bold text-white" : ""
-                }`}
-                onClick={() => {
-                  setActiveTab(item.label);
-                  navigate(`/${item.path}`);
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  {item.icon}
-                  <span>{item.label}</span>
-                </div>
-              </Button>
-            </div>
-          ))}
-        </div>
+    <div className="bg-gray-900 text-gray-300 w-56 flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto p-4">
+        {sidebarItems.map((item, index) => (
+          <div className="mb-2" key={index}>
+            <Button
+              variant={activeTab === item.label ? "primary" : "secondary"}
+              className={`w-full ${
+                activeTab === item.label ? "font-bold text-white" : ""
+              }`}
+              onClick={() => {
+                setActiveTab(item.label);
+                navigate(`/${item.path}`);
+              }}
+            >
+              <div className="flex items-center gap-2">
+                {item.icon}
+                <span>{item.label}</span>
+              </div>
+            </Button>
+          </div>
+        ))}
       </div>
-      <Button
-        className="w-full bg-red-600 text-white hover:bg-red-700 transition"
-        onClick={handleLogout}
-      >
-        <LogOut />
-        Log out
-      </Button>
+      <div className="p-4 border-t border-gray-800">
+        <Button
+          className="w-full bg-red-600 text-white hover:bg-red-700 transition"
+          onClick={handleLogout}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Log out
+        </Button>
+      </div>
     </div>
   );
 }
