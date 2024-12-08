@@ -11,6 +11,7 @@ import Home from "./components/Home.tsx";
 import Tweet from "./components/Tweet.tsx";
 import Video from "./components/Video.tsx";
 import Document from "./components/Document.tsx";
+import { UserProvider } from "./context/UserContext.tsx";
 
 const router = createBrowserRouter([
   {
@@ -59,6 +60,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <UserProvider>
+      <RouterProvider router={router} />
+    </UserProvider>
   </StrictMode>
 );

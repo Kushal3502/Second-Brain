@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const contentTypes = ["audio", "video", "image", "article"];
+const contentTypes = ["audio", "video", "tweet", "document"];
 
 const brainSchema = new mongoose.Schema(
   {

@@ -59,7 +59,7 @@ function Sidebar() {
   };
 
   return (
-    <div className="bg-gray-900 text-gray-300 w-56 flex flex-col h-full">
+    <div className="bg-gray-900 text-gray-300 w-72 flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-4">
         {sidebarItems.map((item, index) => (
           <div className="mb-2" key={index}>

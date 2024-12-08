@@ -4,9 +4,13 @@ import Sidebar from "../components/ui/Sidebar";
 import Button from "../components/ui/Button";
 import { Plus, Share2 } from "lucide-react";
 import Popup from "../components/ui/Popup";
+import { useUser } from "../context/UserContext";
 
 function Dashboard() {
   const [popUp, setPopUp] = useState(false);
+  const { username, userId } = useUser();
+
+  console.log(userId, username);
 
   return (
     <div className="flex flex-col h-screen bg-gray-950 text-white">
@@ -26,12 +30,7 @@ function Dashboard() {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         <main className="flex-1 bg-gray-900 p-6 m-6 rounded-lg overflow-auto">
-          {popUp && (
-            <Popup
-              title="Demo"
-              onClose={() => setPopUp(false)}
-            />
-          )}
+          {popUp && <Popup title="Demo" onClose={() => setPopUp(false)} />}
           <Outlet />
         </main>
       </div>
